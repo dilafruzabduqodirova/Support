@@ -2,6 +2,7 @@ package infinity.learningcenter.service;
 
 import infinity.learningcenter.dto.ResponseDto;
 import infinity.learningcenter.dto.RoomDto;
+import infinity.learningcenter.service.Impl.WeekTableDto;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface RoomService {
     ResponseDto<List<RoomDto>> getByStatus(Boolean isEmpty);
     ResponseDto<RoomDto> update(RoomDto roomDto,Integer id);
     ResponseDto<String> deleteById(Integer id);
+    ResponseDto<WeekTableDto>getByIdWeeks(Integer id);
 }

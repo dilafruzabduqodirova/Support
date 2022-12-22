@@ -2,6 +2,7 @@ package infinity.learningcenter.controller;
 
 import infinity.learningcenter.dto.ResponseDto;
 import infinity.learningcenter.dto.RoomDto;
+import infinity.learningcenter.service.Impl.WeekTableDto;
 import infinity.learningcenter.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -42,5 +43,10 @@ public class RoomController {
     @DeleteMapping("/{id}")
     public ResponseDto<String> deleteById(@PathVariable("id") Integer id) {
         return service.deleteById(id);
+    }
+
+    @GetMapping("getWeek/{id}")
+    public ResponseDto<WeekTableDto> getByWeekId(@PathVariable("id") Integer id){
+        return service.getByIdWeeks(id);
     }
 }

@@ -9,6 +9,7 @@ import infinity.learningcenter.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository repository;
     private final RoomMapper mapper;
+
     @Override
     public ResponseDto<String> add(RoomDto roomDto) {
         roomDto.setBooked(false);
@@ -46,7 +48,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public ResponseDto<RoomDto> getById(Integer id) {
         Optional<Room> optional = repository.findById(id);
-        if(optional.isEmpty()) {
+        if (optional.isEmpty()) {
             return ResponseDto.<RoomDto>builder()
                     .code(-4)
                     .message("id not found")
@@ -64,7 +66,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public ResponseDto<RoomDto> getByName(String name) {
         Optional<Room> optional = repository.findFirstByName(name);
-        if(optional.isEmpty()) {
+        if (optional.isEmpty()) {
             return ResponseDto.<RoomDto>builder()
                     .code(-3)
                     .message("Not found")
@@ -94,7 +96,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public ResponseDto<RoomDto> update(RoomDto roomDto, Integer id) {
-        if(repository.existsById(id)) {
+        if (repository.existsById(id)) {
             Room room = mapper.toEntity(roomDto);
             room.setId(id);
             repository.save(room);
@@ -114,7 +116,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public ResponseDto<String> deleteById(Integer id) {
-        if(repository.existsById(id)) {
+        if (repository.existsById(id)) {
             repository.deleteById(id);
             return ResponseDto.<String>builder()
                     .code(0)
@@ -129,5 +131,41 @@ public class RoomServiceImpl implements RoomService {
                 .success(false)
                 .data("id not found")
                 .build();
+    }
+
+    public ResponseDto<WeekTableDto> getByIdWeeks(Integer id) {
+        Integer weekId = 2;
+        WeekTableDto weekTableDto = new WeekTableDto();
+        weekTableDto.setWeek_names(generateIdByWeek(id));
+        if (id % 2 != 0) {
+            weekId = 1;
+        }
+        List<RoomDto> roomDtoList = repository.findAll().stream().map(mapper::toDto).
+                filter(iteam -> iteam.getGroupList().isEmpty()).toList();
+        for (int i = 0; i < roomDtoList.size(); i++) {
+            Integer finalWeekId = weekId;
+            roomDtoList.get(i).setGroupList(roomDtoList.get(i).getGroupList().stream()
+                    .filter(iteam -> iteam.getWeekId().equals(finalWeekId))
+                    .collect(Collectors.toList()));
+        }
+        weekTableDto.setRoomDtos(roomDtoList);
+        return ResponseDto.<WeekTableDto>builder()
+                .code(0)
+                .message("OK")
+                .success(true)
+                .data(weekTableDto)
+                .build();
+    }
+    public String generateIdByWeek(Integer id){
+        switch (id){
+            case 1:return "Monday";
+            case 2:return "Thuesday";
+            case 3:return "Wednesday";
+            case 4:return "Thursday";
+            case 5:return "Friday";
+            case 6:return "Saturday";
+            case 7:return "Sunday";
+        }
+        return null;
     }
 }
