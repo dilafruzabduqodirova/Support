@@ -49,4 +49,9 @@ public class RoomController {
     public ResponseDto<WeekTableDto> getByWeekId(@PathVariable("id") Integer id){
         return service.getByIdWeeks(id);
     }
+
+    @GetMapping("/week")
+    public ResponseDto<List<WeekTableDto>> getOneWeek(){
+        return service.getOneWeek();
+    }
 }

@@ -15,4 +15,5 @@ public interface RoomService {
     ResponseDto<RoomDto> update(RoomDto roomDto,Integer id);
     ResponseDto<String> deleteById(Integer id);
     ResponseDto<WeekTableDto>getByIdWeeks(Integer id);
+    ResponseDto<List<WeekTableDto>>getOneWeek();
 }

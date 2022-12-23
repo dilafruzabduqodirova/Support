@@ -1,5 +1,6 @@
 package infinity.learningcenter.service.Impl;
 
+import infinity.learningcenter.dao.Group;
 import infinity.learningcenter.dao.Room;
 import infinity.learningcenter.dto.ResponseDto;
 import infinity.learningcenter.dto.RoomDto;
@@ -133,7 +134,47 @@ public class RoomServiceImpl implements RoomService {
                 .build();
     }
 
-    public ResponseDto<WeekTableDto> getByIdWeeks(Integer id) {
+    public ResponseDto<List<WeekTableDto>> getOneWeek() {
+        List<Room> rooms = repository.findAll();
+        List<Room> roomsId1 = new ArrayList<>();
+        List<Room> roomsId2 = new ArrayList<>();
+        for (Room room : rooms) {
+            Room roomId1 = map(room);
+            roomId1.getGroupList().clear();
+            Room roomId2 = map(room);
+            roomId2.getGroupList().clear();
+            for (Group group : room.getGroupList()) {
+                if (group.getWeekId().equals(1)) {
+                    roomId1.getGroupList().add(group);
+                } else {
+                    roomId2.getGroupList().add(group);
+                }
+                if (!roomId1.getGroupList().isEmpty()) roomsId1.add(roomId1);
+                if (!roomId1.getGroupList().isEmpty()) roomsId2.add(roomId2);
+            }
+        }
+        List<RoomDto> roomDtosList1 = roomsId1.stream().map(mapper::toDto).toList();
+        List<RoomDto> roomDtosList2 = roomsId2.stream().map(mapper::toDto).toList();
+
+        List<WeekTableDto> weekTableDtoList = new ArrayList<>(7);
+        for (int i = 0; i < 7; i++) {
+            WeekTableDto weekTableDto = new WeekTableDto();
+            if (i % 2 != 0) {
+                weekTableDto = new WeekTableDto(generateIdByWeek(i), roomDtosList1);
+            } else
+                weekTableDto = new WeekTableDto(generateIdByWeek(i), roomDtosList2);
+            weekTableDtoList.add(weekTableDto);
+        }
+        return ResponseDto.<List<WeekTableDto>>builder()
+                .code(0)
+                .message("OK")
+                .success(true)
+                .data(weekTableDtoList)
+                .build();
+    }
+
+
+    public ResponseDto<WeekTableDto> getByIdWeeks(Integer id) { //method darslarni xafta kunlarini boyicha qaytaradi
         Integer weekId = 2;
         WeekTableDto weekTableDto = new WeekTableDto();
         weekTableDto.setWeek_names(generateIdByWeek(id));
@@ -156,16 +197,34 @@ public class RoomServiceImpl implements RoomService {
                 .data(weekTableDto)
                 .build();
     }
-    public String generateIdByWeek(Integer id){
-        switch (id){
-            case 1:return "Monday";
-            case 2:return "Thuesday";
-            case 3:return "Wednesday";
-            case 4:return "Thursday";
-            case 5:return "Friday";
-            case 6:return "Saturday";
-            case 7:return "Sunday";
+
+    public String generateIdByWeek(Integer id) { //method darslarni xafta kunlari bo'yciah qaytarish uchun .
+        switch (id) {
+            case 1:
+                return "Monday";
+            case 2:
+                return "Thuesday";
+            case 3:
+                return "Wednesday";
+            case 4:
+                return "Thursday";
+            case 5:
+                return "Friday";
+            case 6:
+                return "Saturday";
+            case 7:
+                return "Sunday";
         }
         return null;
+    }
+
+    //bunda biz gr ni larni xammasini xaftalik qilib chiqarish uchun , room ni detail larini qo'limizda kiritib chiqdik .
+    public Room map(Room room) {
+        Room export = new Room();
+        export.setId(room.getId());
+        export.setName(room.getName());
+        export.setBooked(room.getBooked());
+        export.setGroupList(new ArrayList<>());
+        return export;
     }
 }

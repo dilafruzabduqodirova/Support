@@ -176,4 +176,12 @@ public class RandomLesson {
         teacherHashMap.clear();
         dissMissedGroups = "";
     }
+    /*
+     biz darslarni xaftalik qilib chiqarib berishimiz zarur , buning uchun :
+     bizda room , group asosiy role ni o'ynamoqda xozir ,
+     bitta xaftada umumiy => 8 ta dars bo'lishi mumkin ,
+     agar biz xonalar dan foydalanib qilmoqchi bo'lsak ,
+     room ni ichida group list bor , agar biz group list ni tortib kelsak , barcha information lar chiqadi ,
+
+     */
 }
